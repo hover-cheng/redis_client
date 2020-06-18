@@ -7,6 +7,9 @@ from rediscluster import RedisCluster
 from redis import Redis
 import time
 import json
+import logging
+
+logger = logging.getLogger("scripts")
 
 
 class RedisClient(WebsocketConsumer):
@@ -102,44 +105,43 @@ class RedisClient(WebsocketConsumer):
 
     def redis_get(self, keys):
         res = self.connect.get(keys)
-        if res != '':
+        if len(res) > 0:
             return res.decode()
         else:
-            return "No Data"
+            return "数据为空"
 
     def redis_hget(self, name, keys):
         res = self.connect.hget(name, keys)
-        if res != '':
+        if len(res) > 0:
             return res.decode()
         else:
-            return "No Data"
+            return "数据为空"
 
     def redis_hgetall(self, name):
         res = self.connect.hgetall(name)
         res_o = {}
         for k, v in res.items():
             res_o[k.decode()] = v.decode()
-        if res_o != '':
+        if len(res_o) > 0:
             return res_o
         else:
             return "数据为空"
 
     def redis_slowlog(self, num=None):
         res = self.connect.slowlog_get()
+        res_o = ''
         if len(res) > 0 and self.redistype == "Cluster":
-            res_o = ''
             for k, v in res.items():
                 for j in v:
                     slog = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(j['start_time'])) + ' [' + j['command'].decode() + '] ' + str(j['duration']) + ' ' + k + '\n'
                     res_o = res_o + slog
         elif len(res) > 0:
-            res_o = ''
             for i in range(len(res)):
                 for k, v in res[i].items():
                     slog = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(res[i]['start_time'])) + ' [' + res[i]['command'].decode() + '] ' + str(res[i]['duration']) + ' ' + '\n'
                     res_o = res_o + slog
         else:
-            res_o = "NO Data"
+            res_o = "数据为空"
         return res_o
 
     def redis_slowloglen(self):
@@ -152,17 +154,17 @@ class RedisClient(WebsocketConsumer):
 
     def redis_scan(self, keys):
         res = [k.decode() for k in self.connect.scan_iter(keys, count=1000)]
-        if res != '':
+        if len(res) > 0:
             return res
         else:
-            return "No Data"
+            return "数据为空"
 
     def redis_hscan(self, name, keys):
         res = self.connect.hscan_iter(name, keys, count=1000)
         res_o = ''
         for k in res:
             res_o = res_o + k[0].decode() + ": " + k[1].decode() + '\n'
-        if res_o != '':
+        if len(res_o) > 0:
             return res_o
         else:
-            return "No Data"
+            return "数据为空"
