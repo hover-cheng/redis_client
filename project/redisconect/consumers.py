@@ -20,17 +20,21 @@ class RedisClient(WebsocketConsumer):
             self.redistype = self.redisinfo.redistype
             self.nodelist = self.redisinfo.nodelist
             self.mastername = self.redisinfo.mastername
+            if self.redisinfo.password != '':
+                self.password = self.redisinfo.password
+            else:
+                self.password = None
             if self.redistype == 'Sentinel':
                 cluster_nodes = [(i.split(':')[0], int(i.split(':')[1])) for i in self.nodelist.split(',')]
-                con = Sentinel(cluster_nodes, socket_timeout=0.5)
+                con = Sentinel(cluster_nodes, socket_timeout=0.5, password=self.password)
                 self.connect = con.master_for(self.mastername, decode_responses=False)
             elif self.redistype == "Cluster":
                 cluster_nodes = [{"host": i.split(':')[0], "port":int(i.split(':')[1])} for i in self.nodelist.split(',')]
-                self.connect = RedisCluster(startup_nodes=cluster_nodes, decode_responses=False)
+                self.connect = RedisCluster(startup_nodes=cluster_nodes, decode_responses=False, password=self.password)
             elif self.redistype == "Single":
                 host = self.nodelist.split(':')[0]
                 port = int(self.nodelist.split(':')[1])
-                self.connect = Redis(host, port, decode_responses=False)
+                self.connect = Redis(host, port, decode_responses=False, password=self.password)
             self.accept()
             self.send(json.dumps({"message": "redis connect successful"}))
         except:
