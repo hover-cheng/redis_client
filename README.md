@@ -11,6 +11,7 @@
 >* redis-py-cluster==2.0.0
 >* redis==3.0.1
 >* nuxt.js
+>* python==3.6
 
 ### Introduction
 使用WebSocket于后端的django服务通讯，执行redis指令
