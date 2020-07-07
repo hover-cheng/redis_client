@@ -38,7 +38,7 @@ export default {
       })
       .catch((err) => {
         alert("Token is invalid or expired");
-        window.location.href= "/login";
+        window.location.href= "./login";
       })
     },
     getRedisId: function (id) {

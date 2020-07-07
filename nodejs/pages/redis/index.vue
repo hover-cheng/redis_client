@@ -153,13 +153,13 @@
           <tr>
             <th class="single line">redis name</th>
             <th class="single line">redis type </th>
-            <th>nodes list</th>
-            <th v-if="redisId.mastername">master name</th>
-            <th v-if="redisId.password">password</th>
-            <th>create time</th>
-            <th>连接</th>
-            <th>编辑</th>
-            <th>删除</th>
+            <th class="center aligned">nodes list</th>
+            <th class="center aligned" v-if="redisId.mastername">master name</th>
+            <th class="center aligned"  v-if="redisId.password">password</th>
+            <th class="center aligned">create time</th>
+            <th class="center aligned">连接</th>
+            <th class="center aligned">编辑</th>
+            <th class="center aligned">删除</th>
           </tr>
         </thead>
         <tbody>
@@ -171,22 +171,28 @@
             <td v-if="redisId.password">{{redisId.password}}</td>
             <td>{{redisId.createtime | formatDate}}</td>
             <td class="center aligned">
-              <a href="#" title="连接"><i class="sign in alternate icon" @click="connentredis(redisId.id)"></i></a>
+              <a title="连接" @click="connentredis(redisId.id)">
+                <i class="sign in alternate icon"></i>
+              </a>
             </td>
             <td class="center aligned">
-              <a href="#" title="编辑" @click="modifyredis(redisId.id)"><i class="edit outline icon"></i></a>
+              <a title="编辑" @click="modifyredis(redisId.id)">
+                <i class="edit outline icon"></i>
+              </a>
             </td>
             <td class="center aligned">
-              <a href="#" title='删除' @click="removeredis(redisId.id)"><i class="minus square outline icon"></i></a>
+              <a title="删除" @click="removeredis(redisId.id)">
+                <i class="minus square outline icon"></i>
+              </a>
             </td>
           </tr>
         </tbody>
       </table>
-      <textarea v-if="isshow" v-model.trim="message"></textarea></br>
-      <div v-if="isshow" class="ui fluid input">
-        <input class="input_command" type="text" v-model.trim="command" @keyup.enter="sendmeg()">
+      <textarea v-show="isshow" v-model.trim="message"></textarea></br>
+      <div v-show="isshow" class="ui fluid input">
+        <input class="input_command" ref="input" type="text" v-model.trim="command" @keyup.enter="sendmeg()">
       </div>
-      <div v-if="isshow" class="basic segment">
+      <div v-show="isshow" class="basic segment">
         <button class="ui primary basic button" @click="sendmeg()">Send</button>
         <button  class="ui negative basic button" @click="closeconnect()">Close</button>
       </div>
@@ -225,7 +231,7 @@ export default {
   methods: {
     logout: function () {
       window.localStorage.removeItem('usertoken')
-      window.location.href='/login'
+      window.location.href='./login'
     },
     removeredis: function (id) {
       let msg = "您真的确定要删除吗？\n\n请确认！"
@@ -323,6 +329,15 @@ export default {
            _this.message = received_msg.message
          }
       };
+      // 1.给input设置ref
+      // 2.通过this.$refs获取dom
+      // 3.给dom设置焦点focus()
+      // this.$nextTick()将回调延迟到下次 DOM 更新循环之后执行
+      // Tips: focus()在dom渲染之前执行是无效的(显示但不会获取焦点),所以的用$nextTick,
+      this.$nextTick(function(){
+        this.$refs.input.focus();
+      })
+      console.log(this.$refs.input);
     },
     sendmeg: function () {
       this.message = ''
@@ -357,7 +372,6 @@ export default {
   watch: {
   },
   mounted: function () {
-
   },
 }
 
@@ -411,5 +425,8 @@ textarea {
 }
 .ui.pointing.red.basic.label {
   margin-top: -15px;
+}
+.center.aligned a {
+  cursor: pointer;
 }
 </style>

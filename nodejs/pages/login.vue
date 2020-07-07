@@ -44,7 +44,7 @@ export default {
       .then((res) => {
         // 本地浏览器保存token和username
         window.localStorage.setItem('usertoken', res.data.access)
-        window.location.href="/redis";})
+        window.location.href="./redis";})
       .catch((res)=>{alert("登陆失败")})
       // console.log(this.username + ':' + this.password)
     },
